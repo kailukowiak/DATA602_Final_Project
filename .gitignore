@@ -3,3 +3,5 @@
 *.7z
 *.csv
 *.gz
+.vscode
+.mdl_wts.hdf5
