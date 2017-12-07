@@ -5,3 +5,4 @@
 *.gz
 .vscode
 .mdl_wts.hdf5
+.DS_Store
