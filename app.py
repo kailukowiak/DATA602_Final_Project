@@ -15,8 +15,21 @@ from keras.optimizers import Adam
 from scipy import signal
 from scipy import ndimage
 
+<<<<<<< Updated upstream
 df_train = pd.read_json('/Users/kailukowiak/DATA602_Final_Project/data/processed/train.json') # this is a dataframe
 df_test = pd.read_json('/Users/kailukowiak/DATA602_Final_Project/data/processed/test.json')
+=======
+<<<<<<< HEAD
+print("Loading Data")
+os.chdir(sys.path[0])
+# this is a dataframe
+df_train = pd.read_json('train.json') 
+df_test = pd.read_json('test.json')
+=======
+df_train = pd.read_json('/Users/kailukowiak/DATA602_Final_Project/data/processed/train.json') # this is a dataframe
+df_test = pd.read_json('/Users/kailukowiak/DATA602_Final_Project/data/processed/test.json')
+>>>>>>> parent of f912eb4... 
+>>>>>>> Stashed changes
 
 
 def get_scaled_imgs(df):
@@ -193,11 +206,25 @@ earlyStopping = EarlyStopping(monitor='val_loss', patience=10, verbose=0, mode='
 mcp_save = ModelCheckpoint('.mdl_wts.hdf5', save_best_only=True, monitor='val_loss', mode='min')
 reduce_lr_loss = ReduceLROnPlateau(monitor='val_loss', factor=0.1, patience=7, verbose=1, epsilon=1e-4, mode='min')
 
+<<<<<<< Updated upstream
 #------------------------------------------------------------------------------------------------------------------------------------------------------
 # Let's view progress 
 history = model.fit(Xtr_more, Ytr_more, batch_size=batch_size, epochs=50, verbose=1, callbacks=[earlyStopping, mcp_save, reduce_lr_loss], validation_split=0.25)
 
 print(history.history.keys())
+=======
+<<<<<<< HEAD
+history = model.fit(Xtr_more, Ytr_more, batch_size=batch_size, epochs=5, verbose=1, callbacks=[earlyStopping, mcp_save, reduce_lr_loss], validation_split=0.25)
+
+print(history.history.keys())
+
+=======
+#------------------------------------------------------------------------------------------------------------------------------------------------------
+# Let's view progress 
+history = model.fit(Xtr_more, Ytr_more, batch_size=batch_size, epochs=50, verbose=1, callbacks=[earlyStopping, mcp_save, reduce_lr_loss], validation_split=0.25)
+
+print(history.history.keys())
+>>>>>>> Stashed changes
 #
 fig = plt.figure()
 plt.plot(history.history['acc'])
@@ -215,6 +242,10 @@ plt.legend(['train', 'test'], loc='lower left')
 #
 fig.savefig('performance.png')
 #---------------------------------------------------------------------------------------
+<<<<<<< Updated upstream
+=======
+>>>>>>> parent of f912eb4... 
+>>>>>>> Stashed changes
 
 model.load_weights(filepath = '.mdl_wts.hdf5')
 

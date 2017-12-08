@@ -1,4 +1,12 @@
+<<<<<<< Updated upstream
 FROM python:3.6
+=======
+<<<<<<< HEAD
+FROM kaggle/python:latest
+=======
+FROM python:3.6
+>>>>>>> parent of f912eb4... 
+>>>>>>> Stashed changes
 
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
