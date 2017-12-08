@@ -14,26 +14,21 @@ from keras.layers.normalization import BatchNormalization
 from keras.optimizers import Adam
 from scipy import signal
 from scipy import ndimage
+import os
+import sys
 
-<<<<<<< Updated upstream
-df_train = pd.read_json('/Users/kailukowiak/DATA602_Final_Project/data/processed/train.json') # this is a dataframe
-df_test = pd.read_json('/Users/kailukowiak/DATA602_Final_Project/data/processed/test.json')
-=======
-<<<<<<< HEAD
 print("Loading Data")
 os.chdir(sys.path[0])
 # this is a dataframe
 df_train = pd.read_json('train.json') 
 df_test = pd.read_json('test.json')
-=======
-df_train = pd.read_json('/Users/kailukowiak/DATA602_Final_Project/data/processed/train.json') # this is a dataframe
-df_test = pd.read_json('/Users/kailukowiak/DATA602_Final_Project/data/processed/test.json')
->>>>>>> parent of f912eb4... 
->>>>>>> Stashed changes
 
 
 def get_scaled_imgs(df):
-    ''' Scales, generates and puts filters on the images'''
+    ''' Scales, generates and puts filters on the images.
+    We worked under the philosophy that images were easier to understand
+    would also be easier to train.
+    '''
     imgs = []
     xder = np.array([[-1,0,1],[-2,0,2],[-1,0,1]])
     for i, row in df.iterrows():
@@ -151,7 +146,7 @@ def get_more_images(imgs):
     
     return more_images
 
-Ytr_more = np.concatenate((Ytrain,Ytrain,Ytrain))
+Ytr_more = np.concatenate((Ytrain,Ytrain,Ytrain)) # This works becasue the two extra fake datasets are in the same order.
 
 
 def getModel():
@@ -206,54 +201,18 @@ earlyStopping = EarlyStopping(monitor='val_loss', patience=10, verbose=0, mode='
 mcp_save = ModelCheckpoint('.mdl_wts.hdf5', save_best_only=True, monitor='val_loss', mode='min')
 reduce_lr_loss = ReduceLROnPlateau(monitor='val_loss', factor=0.1, patience=7, verbose=1, epsilon=1e-4, mode='min')
 
-<<<<<<< Updated upstream
-#------------------------------------------------------------------------------------------------------------------------------------------------------
-# Let's view progress 
-history = model.fit(Xtr_more, Ytr_more, batch_size=batch_size, epochs=50, verbose=1, callbacks=[earlyStopping, mcp_save, reduce_lr_loss], validation_split=0.25)
-
-print(history.history.keys())
-=======
-<<<<<<< HEAD
 history = model.fit(Xtr_more, Ytr_more, batch_size=batch_size, epochs=5, verbose=1, callbacks=[earlyStopping, mcp_save, reduce_lr_loss], validation_split=0.25)
 
 print(history.history.keys())
 
-=======
-#------------------------------------------------------------------------------------------------------------------------------------------------------
-# Let's view progress 
-history = model.fit(Xtr_more, Ytr_more, batch_size=batch_size, epochs=50, verbose=1, callbacks=[earlyStopping, mcp_save, reduce_lr_loss], validation_split=0.25)
-
-print(history.history.keys())
->>>>>>> Stashed changes
-#
-fig = plt.figure()
-plt.plot(history.history['acc'])
-plt.plot(history.history['val_acc'])
-plt.title('model accuracy')
-plt.ylabel('accuracy')
-plt.xlabel('epoch')
-plt.legend(['train', 'test'], loc='upper left')
-plt.plot(history.history['loss'])
-plt.plot(history.history['val_loss'])
-plt.title('model loss')
-plt.ylabel('loss')
-plt.xlabel('epoch')
-plt.legend(['train', 'test'], loc='lower left')
-#
-fig.savefig('performance.png')
-#---------------------------------------------------------------------------------------
-<<<<<<< Updated upstream
-=======
->>>>>>> parent of f912eb4... 
->>>>>>> Stashed changes
 
 model.load_weights(filepath = '.mdl_wts.hdf5')
-
+# Print out accuracy
 score = model.evaluate(Xtrain, Ytrain, verbose=1)
 print('Train score:', score[0])
 print('Train accuracy:', score[1])
 
-df_test = pd.read_json('../input/test.json')
+df_test = pd.read_json('test.json')
 df_test.inc_angle = df_test.inc_angle.replace('na',0)
 Xtest = (get_scaled_imgs(df_test))
 pred_test = model.predict(Xtest)
