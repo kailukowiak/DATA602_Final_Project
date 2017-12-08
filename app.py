@@ -16,14 +16,14 @@ from scipy import signal
 from scipy import ndimage
 import os
 import sys
-
+os.environ['TF_CPP_MIN_LOG_LEVEL']='2' # Disables warnings in TF WRT CPU
 print("Loading Data")
-os.chdir(sys.path[0])
+#os.chdir(sys.path[0])
+wd = os.getcwd()
 # this is a dataframe
-df_train = pd.read_json('train.json') 
-df_test = pd.read_json('test.json')
-
-
+df_train = pd.read_json('/usr/src/app/train.json') 
+#df_test = pd.read_json('test.json')
+print("Filtering and resizing images")
 def get_scaled_imgs(df):
     ''' Scales, generates and puts filters on the images.
     We worked under the philosophy that images were easier to understand
@@ -68,7 +68,7 @@ def get_scaled_imgs(df):
 
     return np.array(imgs)
 
-
+print("Generating more Data")
 # Xtrain Data
 Xtrain = get_scaled_imgs(df_train)
 Ytrain = np.array(df_train['is_iceberg'])
@@ -148,6 +148,7 @@ def get_more_images(imgs):
 
 Ytr_more = np.concatenate((Ytrain,Ytrain,Ytrain)) # This works becasue the two extra fake datasets are in the same order.
 
+print('Getting the model')
 
 def getModel():
     '''Build a CNN for 2D images'''
@@ -192,7 +193,7 @@ def getModel():
     model.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=['accuracy'])
     
     return model
-
+print('Training model')
 model = getModel()
 model.summary()
 
@@ -220,4 +221,4 @@ pred_test = model.predict(Xtest)
 submission = pd.DataFrame({'id': df_test["id"], 'is_iceberg': pred_test.reshape((pred_test.shape[0]))})
 print(submission.head(10))
 
-submission.to_csv('submission.csv', index=False)
+submission.to_csv('/usr/src/output/submission.csv', index=False) #/usr/src/output/
