@@ -17,13 +17,13 @@ from scipy import ndimage
 import os
 import sys
 os.environ['TF_CPP_MIN_LOG_LEVEL']='2' # Disables warnings in TF WRT CPU
-print("Loading Data")
+print("Loading Data...")
 #os.chdir(sys.path[0])
 wd = os.getcwd()
 # this is a dataframe
 df_train = pd.read_json('/usr/src/app/train.json') 
 #df_test = pd.read_json('test.json')
-print("Filtering and resizing images")
+print("Filtering and resizing images...")
 def get_scaled_imgs(df):
     ''' Scales, generates and puts filters on the images.
     We worked under the philosophy that images were easier to understand
@@ -68,7 +68,7 @@ def get_scaled_imgs(df):
 
     return np.array(imgs)
 
-print("Generating more Data")
+print("Generating more Data...")
 # Xtrain Data
 Xtrain = get_scaled_imgs(df_train)
 Ytrain = np.array(df_train['is_iceberg'])
@@ -148,44 +148,36 @@ def get_more_images(imgs):
 
 Ytr_more = np.concatenate((Ytrain,Ytrain,Ytrain)) # This works becasue the two extra fake datasets are in the same order.
 
-print('Getting the model')
+print('Getting the model...')
 
 def getModel():
     '''Build a CNN for 2D images'''
     # Keras Boiler plate
     model=Sequential()
-    
     # Laywer 1
     model.add(Conv2D(64, kernel_size=(3, 3),activation='relu', input_shape=(73, 73, 3))) # 73 not 75 because of the change caused by the derevative.
     model.add(MaxPooling2D(pool_size=(3, 3), strides=(2, 2)))
     model.add(Dropout(0.2))
-
     # Layer 2
     model.add(Conv2D(128, kernel_size=(3, 3), activation='relu' ))
     model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
     model.add(Dropout(0.2))
-
     # Layer 3
     model.add(Conv2D(128, kernel_size=(3, 3), activation='relu'))
     model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
     model.add(Dropout(0.3))
-
     #Layer 4
     model.add(Conv2D(64, kernel_size=(3, 3), activation='relu'))
     model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
     model.add(Dropout(0.3))
-
     # Flatten Dense layers
     model.add(Flatten())
-
     # Dense 1
     model.add(Dense(512, activation='relu'))
     model.add(Dropout(0.2))
-
     # Dense 2
     model.add(Dense(256, activation='relu'))
     model.add(Dropout(0.2))
-
     # Output 
     model.add(Dense(1, activation="sigmoid"))
 
@@ -193,7 +185,7 @@ def getModel():
     model.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=['accuracy'])
     
     return model
-print('Training model')
+print('Training model...')
 model = getModel()
 model.summary()
 
@@ -202,8 +194,9 @@ earlyStopping = EarlyStopping(monitor='val_loss', patience=10, verbose=0, mode='
 mcp_save = ModelCheckpoint('.mdl_wts.hdf5', save_best_only=True, monitor='val_loss', mode='min')
 reduce_lr_loss = ReduceLROnPlateau(monitor='val_loss', factor=0.1, patience=7, verbose=1, epsilon=1e-4, mode='min')
 
-history = model.fit(Xtr_more, Ytr_more, batch_size=batch_size, epochs=5, verbose=1, callbacks=[earlyStopping, mcp_save, reduce_lr_loss], validation_split=0.25)
+history = model.fit(Xtr_more, Ytr_more, batch_size=batch_size, epochs=50, verbose=1, callbacks=[earlyStopping, mcp_save, reduce_lr_loss], validation_split=0.3)
 
+print("Fitting Model...")
 print(history.history.keys())
 
 
@@ -213,12 +206,15 @@ score = model.evaluate(Xtrain, Ytrain, verbose=1)
 print('Train score:', score[0])
 print('Train accuracy:', score[1])
 
+print("Making predictions...")
 df_test = pd.read_json('test.json')
 df_test.inc_angle = df_test.inc_angle.replace('na',0)
 Xtest = (get_scaled_imgs(df_test))
 pred_test = model.predict(Xtest)
 
 submission = pd.DataFrame({'id': df_test["id"], 'is_iceberg': pred_test.reshape((pred_test.shape[0]))})
+print("Creating Prediction .csv...")
 print(submission.head(10))
 
-submission.to_csv('/usr/src/output/submission.csv', index=False) #/usr/src/output/
+submission.to_csv('/usr/src/output/submission.csv', index=False) #/usr/src/output/ 
+print("All done!")
